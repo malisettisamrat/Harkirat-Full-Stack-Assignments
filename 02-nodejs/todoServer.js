@@ -46,4 +46,63 @@ const app = express();
 
 app.use(bodyParser.json());
 
+var todos = []
+
+// get the all todos
+app.get('/todos', (req, res) => {
+  res.status(200).send(todos);
+});
+
+// example for creating the new object
+// good
+// const original = { a: 1, b: 2 };
+// const copy = { ...original, c: 3 }; // copy => { a: 1, b: 2, c: 3 }
+
+// create a todo
+app.post('/todos', (req, res) => {
+  const todo = req.body.todo;
+  const curr_id = todos.length;
+  const new_todo = {...todo, id: curr_id};
+  todos.push(new_todo);
+  res.status(201).send('Created Todo !!');
+})
+
+// get the specific todo
+app.get('/todos/:id', (req, res) => {
+  const todo_id = req.params.id;
+  var res_todo = null;
+  for(var i = 0; i < todos.length; ++i) {
+    if(todo_id === todos[i].id) {
+      res_todo = todos[i];
+    }
+  }
+  res.status(200).send(res_todo);
+})
+
+
+// update a specific todo by id
+app.put('/todo/:id', (req, res) => {
+    const todo_id = req.params.id;
+    const update_todo = req.body;
+    todos.map((todo) => {
+      if(todo.id === todo_id) {
+        return {
+          ...update_todo,
+          id: todo_id,
+        }
+      }
+    })
+    res.status(200);
+
+})
+
+// delete a todo by its ID
+app.delete('/todo/:id', (req, res) => {
+  const todo_id = req.params.id;
+  const new_todos = todos.filter((todo) => {
+    return todo.id !== todo_id;
+  })
+  res.status(200);
+})
+
 module.exports = app;
